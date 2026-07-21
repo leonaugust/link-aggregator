@@ -1,0 +1,51 @@
+[versions]
+spring-boot = "4.0.6"
+spring-cloud-stub-runner = "4.0.5"
+
+mapstruct = "1.6.3"
+mapstruct-spring = "2.0.0"
+
+jackson = "2.21.3"
+
+lombok = "1.18.38"
+slf4j = "2.0.17"
+jsoup = "1.18.1"
+swagger = "2.2.49"
+postgres = "42.7.11"
+gson = "2.14.0"
+
+junit = "5.10.0"
+testcontainers = "1.20.4"
+
+sonar = "7.3.0.8198"
+
+[libraries]
+
+slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j"}
+
+jackson = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson"}
+
+mapstruct = { module = "org.mapstruct:mapstruct", version.ref = "mapstruct" }
+mapstruct-spring = { module = "org.mapstruct.extensions.spring:mapstruct-spring-annotations", version.ref = "mapstruct-spring"}
+mapstruct-processor = { module = "org.mapstruct:mapstruct-processor", version.ref = "mapstruct"}
+
+lombok = { module = "org.projectlombok:lombok", version.ref = "lombok"}
+
+jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup"}
+
+swagger-core-jakarta = { module = "io.swagger.core.v3:swagger-core-jakarta", version.ref = "swagger"}
+swagger-annotations-jakarta = { module = "io.swagger.core.v3:swagger-annotations-jakarta", version.ref = "swagger"}
+
+postgres = { module = "org.postgresql:postgresql", version.ref = "postgres"}
+
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit"}
+testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers"}
+testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers"}
+testcontainers-postgres = { module = "org.testcontainers:postgresql", version.ref = "testcontainers"}
+spring-cloud-stub-runner = {module = "org.springframework.cloud:spring-cloud-starter-contract-stub-runner", version.ref = "spring-cloud-stub-runner"}
+
+gson = { module = "com.google.code.gson:gson", version.ref = "gson"}
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+sonar = { id = "org.sonarqube", version.ref = "sonar"}

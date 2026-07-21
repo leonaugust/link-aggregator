@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="DEBUG">
+  <Appenders>
+    <File name="File" fileName="build/test-logs/integration-tests.log" append="false">
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+    </File>
+    <Console name="LogToConsole" target="SYSTEM_OUT">
+      <PatternLayout disableAnsi="false"
+        pattern="%d{yyyy-MM-dd'T'HH:mm:ss.SSS} [%t] %highlight{%-5level} %logger{36} [$${ctx:traceId:-}] - %highlight{%msg%throwable%n}{STYLE=Default}"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Logger name="org.apache.kafka.test.TestUtils" level="OFF"/>
+    <Logger name="kafka.log.LogCleaner" level="OFF"/>
+    <Logger name="kafka.log.LogManager" level="OFF"/>
+    <Logger name="kafka.server.ReplicaManager" level="OFF"/>
+    <Logger name="org.apache.kafka.storage.internals.log.LogDirFailureChannel" level="OFF"/>
+    <Logger name="kafka.server.ReplicaManager$LogDirFailureHandler" level="OFF"/>
+<!--    <Logger name="org.springframework.test.context.cache" level="TRACE"/>-->
+<!--    <Logger name="org.springframework.test.context.MergedContextConfiguration" level="DEBUG"/>-->
+
+    <Logger name="ru.leonaugust.link_aggregator" level="INFO" additivity="false">
+      <AppenderRef ref="LogToConsole"/>
+      <AppenderRef ref="File"/>
+    </Logger>
+    <Root level="ERROR">
+      <AppenderRef ref="LogToConsole"/>
+      <AppenderRef ref="File"/>
+    </Root>
+  </Loggers>
+</Configuration>

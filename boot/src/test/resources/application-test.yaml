@@ -1,0 +1,91 @@
+logging:
+  config: classpath:log4j2.xml
+
+spring:
+  application.name: ms-link-aggregator
+  autoconfigure.exclude:
+    - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+    - org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration
+#  liquibase:
+#    change-log: classpath:migrations/bootstrap.yaml
+#    default-schema: link_aggregator
+#    liquibase-schema: public
+#    contexts: dev
+#    database-change-log-table: DATABASECHANGELOG_${spring.liquibase.default-schema}
+#    database-change-log-lock-table: DATABASECHANGELOGLOCK_${spring.liquibase.default-schema}
+#    parameters:
+#      liquibase.dbSchemaNameToCreate: ${spring.liquibase.default-schema}
+#    enabled: true
+#    clear-checksums: false
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_SENDER_EMAIL}
+    password: ${MAIL_SENDER_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls.enable: true
+          debug: true
+
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+
+    encoding: UTF-8
+    check-template-location: true
+
+
+  jackson:
+    property-naming-strategy: LOWER_CAMEL_CASE
+  datasource:
+    hikari:
+      autoCommit: false
+    url: 'jdbc:postgresql://${postgres.host}:${postgres.port}/${postgres.dbname}?currentSchema=${postgres.schema}'
+    driverClassName: 'org.postgresql.Driver'
+    username: ${postgres.user}
+    password: ${postgres.password}
+  jpa:
+    database: h2
+    open-in-view: false
+    properties:
+      hibernate:
+        connection:
+          provider_disables_autocommit: true
+        jdbc:
+          lob.non_contextual_creation: true
+          batch_size: 100
+          batch_versioned_data: true
+        order_inserts: true
+        order_updates: true
+        generate_statistics: false
+        show_sql: false
+        use_sql_comments: false
+        format_sql: false
+    hibernate:
+      ddl-auto: create-drop # validate
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  sql:
+    init:
+      mode: never
+  mvc:
+    async:
+      request-timeout: 300000
+
+server:
+  servlet:
+    context-path: /api/link-aggregator
+
+postgres:
+  host: localhost
+  port: 5433
+  dbname: link_aggregator
+  schema: public
+  user: postgres
+  password: postgres

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Еженедельный отчёт</title>
+  <!-- Inline-стили обязательны для email-клиентов -->
+  <style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        font-family: Arial, sans-serif;
+    }
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .header {
+        background: #4a90d9;
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+    .content {
+        padding: 20px;
+    }
+    .category {
+        margin-bottom: 20px;
+    }
+    .category-name {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        border-bottom: 2px solid #4a90d9;
+        padding-bottom: 5px;
+        margin-bottom: 10px;
+    }
+    .link-list {
+        list-style: none;
+        padding: 0;
+    }
+    .link-list li {
+        margin-bottom: 5px;
+    }
+    .link-list a {
+        color: #4a90d9;
+        text-decoration: none;
+        word-break: break-all;
+    }
+    .footer {
+        text-align: center;
+        color: #999;
+        font-size: 12px;
+        padding: 15px;
+        background: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>📖 Ваш еженедельный отчёт</h1>
+    <p>Самые полезные материалы по категориям</p>
+  </div>
+  <div class="content">
+    <!-- Перебираем все категории из отчёта -->
+    <div th:each="category : ${report.categories}" class="category">
+      <div class="category-name">
+        <!-- Блок выбора эмодзи по имени категории -->
+        <th:block th:switch="${category.categoryName}">
+          <span th:case="'development'">💻 </span>
+          <span th:case="'book'">📚 </span>
+          <span th:case="*">📂 </span>
+        </th:block>
+        <span th:text="${category.categoryName}">Категория</span>
+      </div>
+      <!-- остальное без изменений -->
+      <ul class="link-list">
+        <li th:each="link : ${category.links}">
+          <a th:href="${link}" th:text="${link}" target="_blank">ссылка</a>
+        </li>
+      </ul>
+    </div>
+    <!-- Если категорий нет, показываем сообщение -->
+    <div th:if="${#lists.isEmpty(report.categories)}">
+      <p style="text-align: center; color: #999;">За эту неделю новых закладок не добавлено.</p>
+    </div>
+  </div>
+  <div class="footer">
+    <p>Ваш Link Aggregator</p>
+  </div>
+</div>
+</body>
+</html>
