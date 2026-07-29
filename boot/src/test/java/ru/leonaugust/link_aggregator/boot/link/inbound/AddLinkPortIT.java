@@ -8,6 +8,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -52,6 +53,11 @@ public class AddLinkPortIT extends FullContextITBase {
         .bindToServer().baseUrl("http://localhost:%s/%s".formatted(port, rootPath))
         .responseTimeout(Duration.ofHours(1L))
         .build();
+  }
+
+  @AfterEach
+  void afterEach() {
+    userRepositoryDao.deleteAll();
   }
 
   @Test

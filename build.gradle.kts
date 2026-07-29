@@ -212,9 +212,9 @@ configure(subProjectsWithoutGrouping) {
 
         jvmArgs = listOf("-Duser.timezone=UTC -Dfile.encoding=UTF-8 -Ddebug=true")
         useJUnitPlatform()
-//        testLogging {
-//            showStandardStreams = true // чтобы gradle показывал логи
-//        }
+        testLogging {
+            showStandardStreams = true // чтобы gradle показывал логи
+        }
         doFirst {
             delete(file("build/test-logs"))
         }

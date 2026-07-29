@@ -19,16 +19,14 @@ public class ContentFetcherPortImpl implements ContentFetcherPort {
   @Override
   public Set<String> fetchText(String url) {
     try {
-      Document doc = Jsoup.connect(url)
+      var doc = Jsoup.connect(url)
           .timeout(5000)
-          .userAgent("Mozilla/5.0")   // прикидываемся браузером
+          .userAgent("Mozilla/5.0")
           .followRedirects(true)
           .get();
 
-      // Удаляем скрипты, стили, комментарии и вытаскиваем текст
-      String plainText = doc.body().text();  // или doc.text() для всего документа
+      String plainText = doc.body().text();
 
-      // Извлекаем слова (только буквы любых алфавитов, длина >= 2)
       return WORD_PATTERN.matcher(plainText.toLowerCase())
           .results()
           .map(MatchResult::group)

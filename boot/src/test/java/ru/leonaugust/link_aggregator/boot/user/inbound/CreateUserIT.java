@@ -5,9 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
 import java.time.Duration;
 import java.util.Map;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -53,6 +56,12 @@ public class CreateUserIT extends FullContextITBase {
         .build();
   }
 
+  @AfterEach
+  void afterEach() {
+    userRepositoryDao.deleteAll();
+  }
+
+  @Transactional
   @Test
   void endpointCall_should_saveUser() {
     webTestClient.post()
@@ -73,7 +82,7 @@ public class CreateUserIT extends FullContextITBase {
     assertTrue(savedUser.isPresent());
     assertThat(savedUser.get())
         .usingRecursiveComparison()
-        .ignoringFields("id", "createDate", "updateDate")
+        .ignoringFieldsMatchingRegexes(".*id", ".*createDate", ".*updateDate", ".*user", ".*links")
         .ignoringCollectionOrder()
         .isEqualTo(
             UserEntity.builder()

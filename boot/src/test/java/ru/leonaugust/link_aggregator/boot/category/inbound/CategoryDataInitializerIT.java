@@ -7,6 +7,7 @@ import static ru.leonaugust.link_aggregator.postgres.category.config.CategoryDat
 
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestConstructor;
@@ -26,6 +27,12 @@ public class CategoryDataInitializerIT extends FullContextITBase {
 
   private final SettingsRepositoryDao settingsRepositoryDao;
   private final CategoryRepositoryDao categoryRepositoryDao;
+
+  @AfterEach
+  void afterEach() {
+    settingsRepositoryDao.deleteAll();
+    categoryRepositoryDao.deleteAll();
+  }
 
   @Test
   void applicationStarted_should_saveCategories() {

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.Resource;
@@ -39,10 +38,9 @@ public class CategoryDataInitializer {
       Resource[] resources = resolver.getResources("classpath:categories/*/*.txt");
 
       for (Resource resource : resources) {
-        // Получаем путь: "categories/development/en.txt"
         String path = resource.getURL().getPath();
         String[] parts = path.split("/");
-        String categoryName = parts[parts.length - 2];   // "development"
+        String categoryName = parts[parts.length - 2];
 
         String content = readContent(resource);
         List<String> words = parseWords(content);

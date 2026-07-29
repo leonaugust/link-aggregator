@@ -4,12 +4,19 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+import java.util.regex.MatchResult;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.hibernate.dialect.PostgreSQLDialect;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -18,7 +25,9 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.lifecycle.Startables;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 import org.testcontainers.utility.DockerImageName;
+import ru.leonaugust.link_aggregator.application.api.link.outbound.ContentFetcherPort;
 
+@TestConfiguration
 @ActiveProfiles(profiles = "test")
 @EmbeddedKafka(partitions = 1)
 public class FullContextITBase {
@@ -84,6 +93,20 @@ public class FullContextITBase {
 
   private static void prepareForStart() {
   // some mocks required at startup
+  }
+
+  @Bean
+  @Primary
+  public ContentFetcherPort contentFetcherPort() {
+    return url -> {
+      var wordPattern = Pattern.compile("[\\p{L}]{2,}");
+      var text = url; // NOSONAR. присваивание переменной для читабельности.
+      return wordPattern.matcher(text.toLowerCase())
+          .results()
+          .map(MatchResult::group)
+          .map(String::toLowerCase)
+          .collect(Collectors.toSet());
+    };
   }
 
   @AfterEach

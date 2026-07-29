@@ -28,22 +28,9 @@ services:
       interval: 10s
       timeout: 15s
       retries: 15
-  sonarqube:
-    image: sonarqube:9.9.6-community
-    container_name: sonarqube
-    mem_limit: 2048M
-    ports:
-      - "9000:9000"
-    volumes:
-      - sonarqube_data:/opt/sonarqube/data   # чтобы данные сохранялись
-      - sonarqube_extensions:/opt/sonarqube/extensions
-      - sonarqube_logs:/opt/sonarqube/logs
 
 networks:
   local:
 
 volumes:
   postgres_data:
-  sonarqube_data:
-  sonarqube_extensions:
-  sonarqube_logs:

@@ -5,6 +5,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,6 +41,11 @@ public class ReportSendingE2EIT extends FullContextITBase {
   private final SendReportUseCaseImpl reportSendingPort;
   private final LinkRepositoryDao linkRepositoryDao;
   private final UserRepositoryDao userRepositoryDao;
+
+  @AfterEach
+  void afterEach() {
+    userRepositoryDao.deleteAll();
+  }
 
   @Test
   void endpointCall_should_saveLinks() {

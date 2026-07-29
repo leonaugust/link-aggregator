@@ -30,9 +30,6 @@ public class SimpleWordCategorizeLinkUseCaseImpl implements CategorizeLinkUseCas
       return UNDEFINED;
     }
 
-    // Считаем совпадения для каждой категории
-    record CategoryMatch(Category category, long matchCount) {}
-
     var bestMatch = categories.stream()
         .map(cat -> {
           long matchCount = cat.words().stream()
@@ -54,5 +51,10 @@ public class SimpleWordCategorizeLinkUseCaseImpl implements CategorizeLinkUseCas
     String categoryName = bestMatch.get().category.name();
     log.info("Ссылка {} отнесена к категории '{}' (совпадений: {})", link, categoryName, maxMatches);
     return categoryName;
+  }
+
+
+  record CategoryMatch(Category category, long matchCount) {
+
   }
 }

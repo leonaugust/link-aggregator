@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import org.mapstruct.BeanMapping;
+import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
@@ -17,7 +18,10 @@ import ru.leonaugust.link_aggregator.postgres.user.entity.UserCommunicationEntit
 import ru.leonaugust.link_aggregator.postgres.user.entity.UserEntity;
 import ru.leonaugust.link_aggregator.postgres.user.entity.UserLanguageDbEnum;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
+@Mapper(componentModel = "spring",
+    unmappedTargetPolicy = ReportingPolicy.ERROR,
+    builder = @Builder(disableBuilder = true)
+)
 public interface UserMapper {
 
   @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
