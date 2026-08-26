@@ -32,7 +32,7 @@ import ru.leonaugust.link_aggregator.postgres.user.entity.UserLanguageDbEnum;
 @SpringBootTest(webEnvironment = RANDOM_PORT, classes = MicroserviceStarter.class)
 public class ReportSendingE2EIT extends FullContextITBase {
 
-  @Value("${MAIL_SENDER_RECIPIENT}")
+  @Value("${MAIL_SENDER_RECIPIENT:recipient}")
   private String email;
 
   private static final String DEVELOPMENT_LINK = "https://habr.com/ru/companies/skillfactory/articles/811769/";
