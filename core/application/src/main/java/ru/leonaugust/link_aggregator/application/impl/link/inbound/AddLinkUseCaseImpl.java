@@ -17,7 +17,7 @@ public class AddLinkUseCaseImpl implements AddLinkUseCase {
   @Override
   public void process(AddLink addLink) {
     var links = addLink.links().stream()
-        .map(link -> link.withCategory(categorizeLinkUseCase.categorize(link.link())))
+        .map(link -> link.withCategory(categorizeLinkUseCase.categorize(link.url())))
         .toList();
     linkRepository.saveAll(links, addLink.userSearchCriteria());
   }

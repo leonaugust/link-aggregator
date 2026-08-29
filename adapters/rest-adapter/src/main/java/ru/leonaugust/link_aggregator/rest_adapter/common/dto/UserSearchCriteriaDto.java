@@ -10,7 +10,7 @@ import ru.leonaugust.link_aggregator.domain.user.CommunicationChannel;
 @Jacksonized
 @Schema(name = "UserCommunicationRequestDto")
 public record UserSearchCriteriaDto(
-    Map<CommunicationChannel, String> contact
+    Map<CommunicationChannel, String> contacts
 ) {
 
 }

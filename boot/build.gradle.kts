@@ -10,6 +10,8 @@ dependencies {
     implementation(project(":core:link-aggregator-core-application"))
 
     implementation(project(":adapters:link-aggregator-postgres-adapter"))
+    runtimeOnly(project(":adapters:link-aggregator-kafka-adapter"))
+    runtimeOnly(project(":adapters:link-aggregator-util"))
     runtimeOnly(project(":adapters:link-aggregator-rest-adapter"))
     runtimeOnly(project(":adapters:link-aggregator-email-adapter"))
     runtimeOnly(project(":adapters:link-aggregator-html-fetcher-adapter"))

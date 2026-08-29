@@ -66,7 +66,7 @@ public class FullContextITBase {
 
     bindUrlsToWiremock(registry, WIREMOCK::baseUrl);
 
-//    bindKafkaBootstrapServersToEmbeddedKafka(registry);
+    registry.add("spring.kafka.bootstrap-servers", () -> "${spring.embedded.kafka.brokers}");
   }
 
   public static void bindDatasourceToPostgresOfTestContainers(DynamicPropertyRegistry registry,
@@ -75,17 +75,12 @@ public class FullContextITBase {
     registry.add("spring.datasource.jdbc-url", postgresContainer::getJdbcUrl);
     registry.add("spring.datasource.username", postgresContainer::getUsername);
     registry.add("spring.datasource.password", postgresContainer::getPassword);
-//    registry.add("postgres.port", () -> postgresContainer::getMappedPort);
     registry.add("spring.datasource.driver-class-name", postgresContainer::getDriverClassName);
     registry.add("spring.jpa.properties.hibernate.dialect", PostgreSQLDialect.class::getName);
     registry.add("spring.jpa.show-sql", () -> false);
     registry.add("spring.jpa.properties.hibernate.format_sql", () -> false);
     registry.add("spring.jpa.properties.hibernate.use_sql_comments", () -> false);
   }
-
-//  public static void bindKafkaBootstrapServersToEmbeddedKafka(DynamicPropertyRegistry registry) {
-//    registry.add("spring.kafka.bootstrap-servers", () -> "${spring.embedded.kafka.brokers}");
-//  }
 
   public static void bindUrlsToWiremock(DynamicPropertyRegistry registry, Supplier<Object> baseUrlSupplier) {
     registry.add("some.integration.url", baseUrlSupplier);
