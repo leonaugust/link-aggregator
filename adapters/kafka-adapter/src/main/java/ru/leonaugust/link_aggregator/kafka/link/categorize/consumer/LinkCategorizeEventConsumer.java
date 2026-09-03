@@ -21,7 +21,7 @@ public class LinkCategorizeEventConsumer {
   public void consume(LinkCategorizeEvent event) {
     log.info("Received event: {}", event);
     var link = event.getLink();
-    link = link.withCategory(categorizeLinkUseCase.categorize(link.url()));
+    link = link.withCategory(categorizeLinkUseCase.categorize(link.url()).block());
     linkRepository.update(link.id(), link);
   }
 }

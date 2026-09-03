@@ -1,5 +1,6 @@
 dependencies {
     api(project(":core:link-aggregator-core-domain"))
+    api("io.projectreactor:reactor-core:3.8.5")
     implementation(rootProject.libs.mapstruct)
 }
 

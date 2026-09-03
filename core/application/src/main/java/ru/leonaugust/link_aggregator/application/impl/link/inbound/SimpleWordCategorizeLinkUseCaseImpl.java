@@ -4,13 +4,13 @@ import java.util.Comparator;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 import ru.leonaugust.link_aggregator.application.UseCase;
 import ru.leonaugust.link_aggregator.application.api.category.outbound.CategoryRepository;
 import ru.leonaugust.link_aggregator.application.api.link.inbound.CategorizeLinkUseCase;
 import ru.leonaugust.link_aggregator.application.api.link.outbound.ContentFetcherPort;
 import ru.leonaugust.link_aggregator.domain.category.Category;
 
-@UseCase
 @RequiredArgsConstructor
 @Slf4j
 public class SimpleWordCategorizeLinkUseCaseImpl implements CategorizeLinkUseCase {
@@ -21,7 +21,11 @@ public class SimpleWordCategorizeLinkUseCaseImpl implements CategorizeLinkUseCas
   private final CategoryRepository categoryRepository;
 
   @Override
-  public String categorize(String link) {
+  public Mono<String> categorize(String link) {
+    return Mono.fromCallable(() -> categorizeSync(link));
+  }
+
+  public String categorizeSync(String link) {
     var categories = categoryRepository.getCategories();
 
     Set<String> pageWords = contentFetcherPort.fetchText(link);
@@ -31,16 +35,16 @@ public class SimpleWordCategorizeLinkUseCaseImpl implements CategorizeLinkUseCas
     }
 
     var bestMatch = categories.stream()
-        .map(cat -> {
-          long matchCount = cat.words().stream()
-              .filter(w -> pageWords.contains(w.toLowerCase()))
-              .count();
-          return new CategoryMatch(cat, matchCount);
-        })
-        .filter(cm -> cm.matchCount > 0)
-        .peek(cm -> log.info("match: %s, category: %s".formatted(cm.matchCount, cm.category.name())))
-        .filter(cm -> cm.matchCount() > 10)
-        .max(Comparator.comparingLong(CategoryMatch::matchCount));
+            .map(cat -> {
+              long matchCount = cat.words().stream()
+                      .filter(w -> pageWords.contains(w.toLowerCase()))
+                      .count();
+              return new CategoryMatch(cat, matchCount);
+            })
+            .filter(cm -> cm.matchCount > 0)
+            .peek(cm -> log.info("match: %s, category: %s".formatted(cm.matchCount, cm.category.name())))
+            .filter(cm -> cm.matchCount() > 10)
+            .max(Comparator.comparingLong(CategoryMatch::matchCount));
 
     if (bestMatch.isEmpty()) {
       log.info("Ни одна категория не подошла для {}", link);

@@ -12,6 +12,7 @@ include("adapters:email-adapter")
 include("adapters:html-fetcher-adapter")
 include("adapters:kafka-adapter")
 include("adapters:util")
+include("adapters:ai-adapter")
 
 include("build-tools")
 
@@ -26,6 +27,7 @@ findProject(":adapters:email-adapter")?.name = "link-aggregator-email-adapter"
 findProject(":adapters:html-fetcher-adapter")?.name = "link-aggregator-html-fetcher-adapter"
 findProject(":adapters:kafka-adapter")?.name = "link-aggregator-kafka-adapter"
 findProject(":adapters:util")?.name = "link-aggregator-util"
+findProject(":adapters:ai-adapter")?.name = "link-aggregator-ai-adapter"
 
 findProject(":boot")?.name = "boot"
 

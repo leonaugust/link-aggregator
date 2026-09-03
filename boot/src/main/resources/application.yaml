@@ -1,6 +1,15 @@
 logging:
   config: classpath:log4j2.xml
 
+link-aggregator:
+  category-determination:
+    strategy: ai
+  ai:
+    ollama.enabled: true
+    enabled: true
+    base-url: http://localhost:11434
+    generate-model: qwen2.5:3b-instruct
+    embed-model: nomic-embed-text
 spring:
   application.name: link_aggregator
   autoconfigure.exclude:
