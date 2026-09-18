@@ -9,7 +9,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-autoconfigure")
     implementation(project(":core:link-aggregator-core-application"))
 
+    implementation(project(":adapters:link-aggregator-ai-adapter"))
     implementation(project(":adapters:link-aggregator-postgres-adapter"))
+    runtimeOnly(project(":adapters:link-aggregator-kafka-adapter"))
+    runtimeOnly(project(":adapters:link-aggregator-util"))
     runtimeOnly(project(":adapters:link-aggregator-rest-adapter"))
     runtimeOnly(project(":adapters:link-aggregator-email-adapter"))
     runtimeOnly(project(":adapters:link-aggregator-html-fetcher-adapter"))
@@ -36,6 +39,9 @@ dependencies {
     testImplementation(project(":core:link-aggregator-core-application"))
     testImplementation(project(":adapters:link-aggregator-postgres-adapter"))
     testImplementation(project(":adapters:link-aggregator-rest-adapter"))
+    testImplementation(project(":adapters:link-aggregator-ai-adapter"))
+    testImplementation("org.testcontainers:ollama:1.20.4")
+//    testImplementation("org.springframework.ai:spring-ai-ollama-spring-boot-starter:1.0.0-M6")
 }
 
 springBoot {

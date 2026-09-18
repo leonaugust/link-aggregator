@@ -1,10 +1,5 @@
 package ru.leonaugust.link_aggregator.boot.link.inbound;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static ru.leonaugust.link_aggregator.postgres.category.config.CategoryDataInitializer.CATEGORIES_INITIALIZED;
-
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,10 +9,16 @@ import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestConstructor.AutowireMode;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 import ru.leonaugust.link_aggregator.application.impl.link.inbound.SimpleWordCategorizeLinkUseCaseImpl;
-import ru.leonaugust.link_aggregator.boot.FullContextITBase;
+import ru.leonaugust.test_config.FullContextITBase;
 import ru.leonaugust.link_aggregator.boot.MicroserviceStarter;
 import ru.leonaugust.link_aggregator.postgres.category.config.CategoryDataInitializer;
 import ru.leonaugust.link_aggregator.postgres.settings.dao.SettingsRepositoryDao;
+
+import java.util.concurrent.TimeUnit;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static ru.leonaugust.link_aggregator.postgres.category.config.CategoryDataInitializer.CATEGORIES_INITIALIZED;
 
 @RequiredArgsConstructor
 @TestConstructor(autowireMode = AutowireMode.ALL)
@@ -52,10 +53,10 @@ public class SimpleWordCategorizeLinkPortImplIT extends FullContextITBase {
   @Test
   void categorize_should_returnCorrectCategory() {
     assertThat(
-        simpleWordCategorizeLinkPort.categorize(DEVELOPMENT_TEXT)
+        simpleWordCategorizeLinkPort.categorize(DEVELOPMENT_TEXT).block()
     ).isEqualTo("development");
     assertThat(
-        simpleWordCategorizeLinkPort.categorize(BOOK_TEXT)
+        simpleWordCategorizeLinkPort.categorize(BOOK_TEXT).block()
     ).isEqualTo("book");
   }
 }

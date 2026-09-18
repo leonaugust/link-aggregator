@@ -13,10 +13,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestConstructor.AutowireMode;
 import ru.leonaugust.link_aggregator.application.impl.report.inbound.SendReportUseCaseImpl;
-import ru.leonaugust.link_aggregator.boot.FullContextITBase;
+import ru.leonaugust.test_config.FullContextITBase;
 import ru.leonaugust.link_aggregator.boot.MicroserviceStarter;
 import ru.leonaugust.link_aggregator.domain.user.CommunicationChannel;
-import ru.leonaugust.link_aggregator.domain.user.UserCommunication;
 import ru.leonaugust.link_aggregator.domain.user.UserSearchCriteria;
 import ru.leonaugust.link_aggregator.postgres.link.dao.LinkRepositoryDao;
 import ru.leonaugust.link_aggregator.postgres.link.entity.LinkEntity;
@@ -65,12 +64,12 @@ public class ReportSendingE2EIT extends FullContextITBase {
         List.of(
             LinkEntity.builder()
                 .user(userEntity)
-                .link(DEVELOPMENT_LINK)
+                .url(DEVELOPMENT_LINK)
                 .category("development")
                 .build(),
             LinkEntity.builder()
                 .user(userEntity)
-                .link(BOOK_LINK)
+                .url(BOOK_LINK)
                 .category("book")
                 .build()
         )

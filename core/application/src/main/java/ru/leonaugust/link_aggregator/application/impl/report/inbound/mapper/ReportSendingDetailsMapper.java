@@ -17,7 +17,7 @@ public interface ReportSendingDetailsMapper {
     var categoriesWithLinks = links.stream()
           .collect(Collectors.groupingBy(
               Link::category,
-              Collectors.mapping(Link::link, Collectors.toList()
+              Collectors.mapping(Link::url, Collectors.toList()
               )
           )).entrySet().stream()
         .map(e -> toReportSendingDetails(e.getKey(), e.getValue()))

@@ -1,5 +1,6 @@
 dependencies{
     annotationProcessor(project(":link-aggregator-build-tools"))
+    api(project(":adapters:link-aggregator-util"))
 
     implementation(project(":core:link-aggregator-core-application"))
     api("org.springframework.boot:spring-boot-starter-web")

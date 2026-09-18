@@ -10,7 +10,7 @@ import ru.leonaugust.link_aggregator.rest_adapter.common.dto.UserSearchCriteriaD
 @Jacksonized
 @Schema(name = "AddLinkRequestDto")
 public record AddLinkRequestDto(
-    List<String> links,
+    List<String> urls,
     UserSearchCriteriaDto userSearch
 ) {
 

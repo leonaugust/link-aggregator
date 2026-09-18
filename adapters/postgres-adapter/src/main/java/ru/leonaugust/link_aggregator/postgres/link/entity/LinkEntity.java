@@ -8,9 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -18,7 +15,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import ru.leonaugust.link_aggregator.postgres.user.entity.UserEntity;
 
 @Entity
@@ -39,8 +35,8 @@ public class LinkEntity {
   @JoinColumn(name = "user_id", referencedColumnName = "id")
   private UserEntity user;
 
-  @Column(name = "link", nullable = false)
-  private String link;
+  @Column(name = "url", nullable = false)
+  private String url;
 
   @Column(name = "category")
   private String category;

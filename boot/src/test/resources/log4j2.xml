@@ -18,6 +18,8 @@
 <!--    <Logger name="kafka.server.ReplicaManager$LogDirFailureHandler" level="OFF"/>-->
 <!--    <Logger name="org.springframework.test.context.cache" level="TRACE"/>-->
 <!--    <Logger name="org.springframework.test.context.MergedContextConfiguration" level="DEBUG"/>-->
+<!--          <Logger name="org.testcontainers" level="DEBUG"/>-->
+<!--          <Logger name="com.github.dockerjava" level="DEBUG"/>-->
 
     <Logger name="ru.leonaugust.link_aggregator" level="INFO" additivity="false">
       <AppenderRef ref="LogToConsole"/>

@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestConstructor.AutowireMode;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
-import ru.leonaugust.link_aggregator.boot.FullContextITBase;
+import ru.leonaugust.test_config.FullContextITBase;
 import ru.leonaugust.link_aggregator.boot.MicroserviceStarter;
 import ru.leonaugust.link_aggregator.postgres.category.dao.CategoryRepositoryDao;
 import ru.leonaugust.link_aggregator.postgres.settings.dao.SettingsRepositoryDao;

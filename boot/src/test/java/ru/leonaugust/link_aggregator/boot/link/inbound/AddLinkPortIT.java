@@ -7,7 +7,9 @@ import jakarta.annotation.PostConstruct;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +18,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestConstructor.AutowireMode;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import ru.leonaugust.link_aggregator.boot.FullContextITBase;
+import ru.leonaugust.test_config.FullContextITBase;
 import ru.leonaugust.link_aggregator.boot.MicroserviceStarter;
 import ru.leonaugust.link_aggregator.domain.user.CommunicationChannel;
 import ru.leonaugust.link_aggregator.postgres.link.dao.LinkRepositoryDao;
@@ -61,7 +63,7 @@ public class AddLinkPortIT extends FullContextITBase {
   }
 
   @Test
-  void endpointCall_should_saveLinks() {
+  void endpointCall_should_saveLinks() throws InterruptedException {
     var userEntity = UserEntity.builder()
         .build();
     userEntity = userRepositoryDao.save(userEntity);
@@ -78,28 +80,31 @@ public class AddLinkPortIT extends FullContextITBase {
         .uri(LinkV1Controller.PATH)
         .bodyValue(AddLinkRequestDto.builder()
             .userSearch(UserSearchCriteriaDto.builder()
-                .contact(Map.of(CommunicationChannel.EMAIL, EMAIL))
+                .contacts(Map.of(CommunicationChannel.EMAIL, EMAIL))
                 .build())
-            .links(List.of(LINK_FIRST, LINK_SECOND))
+            .urls(List.of(LINK_FIRST, LINK_SECOND))
             .build())
         .exchange()
         .expectStatus()
         .is2xxSuccessful();
 
-    var savedLinks = linkRepositoryDao.findByEmailOrTelegram(EMAIL, null);
-    assertThat(savedLinks.size()).isEqualTo(2);
-    assertThat(savedLinks)
+//    Thread.sleep(5000L);
+    Awaitility.await()
+        .atMost(10, TimeUnit.SECONDS)
+        .pollDelay(1, TimeUnit.SECONDS)
+        .until(() -> linkRepositoryDao.findByEmailOrTelegram(EMAIL, null).size() == 2);
+    assertThat(linkRepositoryDao.findByEmailOrTelegram(EMAIL, null))
         .usingRecursiveComparison()
         .ignoringFields("id")
         .ignoringExpectedNullFields()
         .ignoringCollectionOrder()
         .isEqualTo(List.of(
             LinkEntity.builder()
-                .link(LINK_FIRST)
+                .url(LINK_FIRST)
                 .category("undefined")
                 .build(),
             LinkEntity.builder()
-                .link(LINK_SECOND)
+                .url(LINK_SECOND)
                 .category("undefined")
                 .build()
         ));

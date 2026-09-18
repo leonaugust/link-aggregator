@@ -8,7 +8,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import java.time.Duration;
 import java.util.Map;
-import java.util.UUID;
+
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestConstructor.AutowireMode;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import ru.leonaugust.link_aggregator.boot.FullContextITBase;
+import ru.leonaugust.test_config.FullContextITBase;
 import ru.leonaugust.link_aggregator.boot.MicroserviceStarter;
 import ru.leonaugust.link_aggregator.domain.user.CommunicationChannel;
 import ru.leonaugust.link_aggregator.postgres.user.dao.UserRepositoryDao;

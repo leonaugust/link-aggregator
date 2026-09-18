@@ -3,7 +3,6 @@ package ru.leonaugust.link_aggregator.rest_adapter.report.v1.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
-import ru.leonaugust.link_aggregator.domain.user.CommunicationChannel;
 import ru.leonaugust.link_aggregator.domain.user.UserSearchCriteria;
 import ru.leonaugust.link_aggregator.rest_adapter.common.dto.UserSearchCriteriaDto;
 import ru.leonaugust.link_aggregator.rest_adapter.report.v1.dto.SendReportRequestDto;
@@ -12,11 +11,11 @@ import ru.leonaugust.link_aggregator.rest_adapter.report.v1.dto.SendReportReques
 public interface ReportMapper {
 
   @Mapping(target = "preferredChannel", ignore = true)
-  @Mapping(target = "contacts", source = "dto.userSearchRequestDto.contact")
+  @Mapping(target = "contacts", source = "dto.userSearchRequestDto.contacts")
   UserSearchCriteria map(SendReportRequestDto dto);
 
   @Mapping(target = "preferredChannel", ignore = true)
-  @Mapping(target = "contacts", source = "contact")
+  @Mapping(target = "contacts", source = "contacts")
   UserSearchCriteria mapUserCommunication(UserSearchCriteriaDto userCommunicationRequestDto);
 
 }
