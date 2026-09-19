@@ -13,6 +13,7 @@ include("adapters:html-fetcher-adapter")
 include("adapters:kafka-adapter")
 include("adapters:util")
 include("adapters:ai-adapter")
+include("adapters:fraud-adapter")
 
 include("build-tools")
 
@@ -28,6 +29,7 @@ findProject(":adapters:html-fetcher-adapter")?.name = "link-aggregator-html-fetc
 findProject(":adapters:kafka-adapter")?.name = "link-aggregator-kafka-adapter"
 findProject(":adapters:util")?.name = "link-aggregator-util"
 findProject(":adapters:ai-adapter")?.name = "link-aggregator-ai-adapter"
+findProject(":adapters:fraud-adapter")?.name = "link-aggregator-fraud-adapter"
 
 findProject(":boot")?.name = "boot"
 

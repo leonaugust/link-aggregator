@@ -58,7 +58,7 @@ public class AiFullContextITBase {
       .withDatabaseName(DB_NAME)
           .withUsername("postgres")
           .withPassword("postgres");
-  private static final String GENERATE_MODEL = "qwen2.5:3b-instruct";
+  private static final String GENERATE_MODEL = "qwen2.5:7b-instruct";
   private static final String EMBED_MODEL = "nomic-embed-text";
 
   @Autowired

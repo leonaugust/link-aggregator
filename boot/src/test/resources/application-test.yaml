@@ -1,6 +1,11 @@
 logging:
   config: classpath:log4j2.xml
 
+link-aggregator:
+  fraud-check:
+    enabled: false
+    provider: noop
+
 spring:
   application.name: ms-link-aggregator
   autoconfigure.exclude:
