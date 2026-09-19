@@ -1,25 +1,16 @@
 package ru.leonaugust.link_aggregator.boot.link;
 
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestConstructor.AutowireMode;
-import org.testcontainers.shaded.org.awaitility.Awaitility;
 import ru.leonaugust.link_aggregator.ai.category.AiCategorizeLinkUseCaseImpl;
 import ru.leonaugust.link_aggregator.boot.MicroserviceStarter;
-import ru.leonaugust.link_aggregator.postgres.category.config.CategoryDataInitializer;
-import ru.leonaugust.link_aggregator.postgres.settings.dao.SettingsRepositoryDao;
 import ru.leonaugust.test_config.AiFullContextITBase;
-
-import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static ru.leonaugust.link_aggregator.postgres.category.config.CategoryDataInitializer.CATEGORIES_INITIALIZED;
 
 @RequiredArgsConstructor
 @TestConstructor(autowireMode = AutowireMode.ALL)

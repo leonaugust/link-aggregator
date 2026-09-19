@@ -21,13 +21,16 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.lifecycle.Startables;
-import org.testcontainers.ollama.OllamaContainer;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 import org.testcontainers.utility.DockerImageName;
 import ru.leonaugust.link_aggregator.ai.config.AiProperties;
 import ru.leonaugust.link_aggregator.application.api.link.outbound.ContentFetcherPort;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.regex.MatchResult;
@@ -55,33 +58,23 @@ public class AiFullContextITBase {
       .withDatabaseName(DB_NAME)
           .withUsername("postgres")
           .withPassword("postgres");
-  private static final String OLLAMA_IMAGE = "ollama/ollama";
-//  private static final String MODEL = "deepseek-r1:7b";
   private static final String GENERATE_MODEL = "qwen2.5:3b-instruct";
   private static final String EMBED_MODEL = "nomic-embed-text";
 
   @Autowired
   private AiProperties aiProperties;
 
-  @Container
-  static OllamaContainer ollama = new OllamaContainer(OLLAMA_IMAGE)
-      .withEnv("NVIDIA_VISIBLE_DEVICES", "void")
-      .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withRuntime("runc"));
-//      .withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withRuntime("runc"));;
   static int WIREMOCK_PORT;
 
   @BeforeAll
-  static void beforeAll() throws IOException, InterruptedException {
+  static void beforeAll() throws IOException {
     WireMock.configureFor(WIREMOCK_PORT);
-    ollama.start();
-    ollama.execInContainer("ollama", "pull", GENERATE_MODEL);
-    ollama.execInContainer("ollama", "pull", EMBED_MODEL);
+    awaitModelsReady(ollamaBaseUrl());
   }
 
   @DynamicPropertySource
   static void setUpProperties(final DynamicPropertyRegistry registry) {
-    var endpoint = "http://" + ollama.getHost() + ":" + ollama.getFirstMappedPort();
-    registry.add("link-aggregator.ai.base-url", () -> endpoint);
+    registry.add("link-aggregator.ai.base-url", AiFullContextITBase::ollamaBaseUrl);
 
     Startables.deepStart(POSTGRES_CONTAINER).join();
 
@@ -96,6 +89,33 @@ public class AiFullContextITBase {
     bindUrlsToWiremock(registry, WIREMOCK::baseUrl);
 
     registry.add("spring.kafka.bootstrap-servers", () -> "${spring.embedded.kafka.brokers}");
+  }
+
+  private static String ollamaBaseUrl() {
+    return System.getenv().getOrDefault("OLLAMA_URL", "http://localhost:11434");
+  }
+
+  private static void awaitModelsReady(String baseUrl) {
+    Awaitility.await().atMost(2, TimeUnit.MINUTES)
+        .pollInterval(2, TimeUnit.SECONDS)
+        .until(() -> {
+          try {
+            var request = HttpRequest.newBuilder(URI.create(baseUrl + "/api/tags")).GET().build();
+            var response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
+              return false;
+            }
+            var modelNames = Pattern.compile("\"name\":\"[^\"]+\"")
+                .matcher(response.body())
+                .results()
+                .map(MatchResult::group)
+                .collect(Collectors.toSet());
+            return modelNames.stream().anyMatch(name -> name.startsWith("\"name\":\"" + GENERATE_MODEL))
+                && modelNames.stream().anyMatch(name -> name.startsWith("\"name\":\"" + EMBED_MODEL));
+          } catch (Exception ignored) {
+            return false;
+          }
+        });
   }
 
   public static void bindDatasourceToPostgresOfTestContainers(DynamicPropertyRegistry registry,
