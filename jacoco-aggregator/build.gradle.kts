@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
   id("jacoco-report-aggregation")
   alias(libs.plugins.sonar)
@@ -49,31 +51,34 @@ val sonarExclusions = listOf(
   "**/*.mustache"
 ).joinToString(",")
 
+val sonarJacocoXmlReport = layout.buildDirectory
+  .file("jacocoReports/testCodeCoverageReport/testCodeCoverageReport.xml")
+
+val projectLocalSonarProps: Properties? = rootProject.projectDir
+  .resolve(".gradle/sonar.properties")
+  .takeIf { it.isFile }
+  ?.let { file -> Properties().also { props -> file.inputStream().use { input -> props.load(input) } } }
+val sonarTokenProvider = providers.environmentVariable("SONAR_TOKEN")
+  .orElse(providers.gradleProperty("sonar.token"))
+  .orElse(providers.provider { projectLocalSonarProps?.getProperty("sonar.token")?.takeIf { it.isNotBlank() } })
+val sonarHostUrl = providers.environmentVariable("SONAR_HOST_URL")
+  .orElse(providers.gradleProperty("sonar.host.url"))
+  .getOrElse("http://localhost:9000")
+val sonarProjectKey = providers.gradleProperty("sonar.projectKey")
+  .getOrElse("link-aggregator")
+
 sonar {
   properties {
-    property("sonar.projectKey", "link-aggregator")
-    property("sonar.host.url", "http://localhost:9000")
-    property("sonar.login", "admin")
-    property("sonar.password", "admin1")
+    property("sonar.projectKey", sonarProjectKey)
+    property("sonar.host.url", sonarHostUrl)
+    sonarTokenProvider.orNull?.let { token -> property("sonar.token", token) }
     property("sonar.java.coveragePlugin", "jacoco")
-    property("sonar.coverage.jacoco.xmlReportPaths",
-      "${rootDir}/jacoco-aggregator/build/jacocoReports/jacocoRootReport/jacocoRootReport.xml")
+    property("sonar.coverage.jacoco.xmlReportPaths", sonarJacocoXmlReport.get().asFile.absolutePath)
     property("sonar.java.binaries", binaries)
     property("sonar.sources", projectSources)
     property("sonar.java.test.binaries", testBinaries)
     property("sonar.projectBaseDir", rootProject.projectDir.absolutePath)
-//    property("sonar.sources",
-//      subprojects
-//        .filter { it.path !in listOf(":adapters", ":core") }
-//        .flatMap { it.sourceSets["main"].allSource.srcDirs }
-//        .joinToString(",")
-//    )
-//    property("sonar.java.binaries",
-//      subprojects
-//        .filter { it.path !in listOf(":adapters", ":core") }
-//        .flatMap { it.sourceSets["main"].output.classesDirs }
-//        .joinToString(",")
-//    )
+    property("sonar.exclusions", sonarExclusions)
   }
 }
 
@@ -115,6 +120,77 @@ tasks.testCodeCoverageReport {
               "📊 HTML: $reportUri\n"
     )
   }
+}
+
+val verifySonarJacocoReport = tasks.register("verifySonarJacocoReport") {
+  group = "verification"
+  description = "Verifies that the aggregated JaCoCo XML report consumed by SonarQube exists and is valid"
+  dependsOn(tasks.testCodeCoverageReport)
+  doLast {
+    val reportFile = sonarJacocoXmlReport.get().asFile
+    check(reportFile.exists()) {
+      "JaCoCo aggregated report not found at ${reportFile.absolutePath}. " +
+        "Run './gradlew testCodeCoverageReport' first."
+    }
+    val content = reportFile.readText()
+    check(content.contains("<report")) {
+      "JaCoCo aggregated report is not a valid report (missing <report>) at ${reportFile.absolutePath}."
+    }
+    val sourceFileCount = Regex("<sourcefile ").findAll(content).count()
+    check(sourceFileCount > 0) {
+      "JaCoCo aggregated report contains no <sourcefile> entries at ${reportFile.absolutePath}."
+    }
+    val instructionCounters = Regex("<counter type=\"INSTRUCTION\" missed=\"(\\d+)\" covered=\"(\\d+)\"/>")
+      .findAll(content)
+      .toList()
+    check(instructionCounters.isNotEmpty()) {
+      "JaCoCo aggregated report contains no INSTRUCTION counters at ${reportFile.absolutePath}."
+    }
+    val coveredInstructions = instructionCounters.last().groupValues[2].toLong()
+    check(coveredInstructions > 0) {
+      "JaCoCo aggregated report is an all-zero report (no covered instructions) at ${reportFile.absolutePath}."
+    }
+    logger.lifecycle(
+      "\n=== SonarQube JaCoCo report verified ===\n" +
+        "File: ${reportFile.absolutePath}\n" +
+        "Source files: $sourceFileCount\n" +
+        "Covered instructions: $coveredInstructions\n"
+    )
+  }
+}
+
+val sonarTokenRequiredMessage =
+  "SONAR_TOKEN is required to run SonarQube analysis. Provide it via the SONAR_TOKEN " +
+    "environment variable or the -Psonar.token=<token> Gradle property."
+
+val failWithoutSonarToken: () -> Unit = {
+  check(sonarTokenProvider.isPresent) { sonarTokenRequiredMessage }
+}
+
+gradle.taskGraph.whenReady {
+  val sonarRequested = allTasks.any { task -> task.name == "sonar" || task.name == "sonarqube" }
+  if (sonarRequested && !sonarTokenProvider.isPresent) {
+    throw GradleException(sonarTokenRequiredMessage)
+  }
+}
+
+tasks.named("sonar") {
+  dependsOn(verifySonarJacocoReport)
+  doFirst { failWithoutSonarToken() }
+}
+
+tasks.named("sonarqube") {
+  dependsOn(verifySonarJacocoReport)
+  doFirst { failWithoutSonarToken() }
+}
+
+val sonarAnalyzeEnabled = providers.environmentVariable("SONAR_ANALYZE")
+  .orElse(providers.gradleProperty("sonar.analyze"))
+  .map { it.toBoolean() }
+  .getOrElse(false)
+
+if (sonarAnalyzeEnabled) {
+  tasks.named("check") { finalizedBy("sonar") }
 }
 
 tasks.publish {

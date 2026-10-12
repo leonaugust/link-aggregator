@@ -41,6 +41,7 @@ dependencies {
     testImplementation(project(":adapters:link-aggregator-postgres-adapter"))
     testImplementation(project(":adapters:link-aggregator-rest-adapter"))
     testImplementation(project(":adapters:link-aggregator-ai-adapter"))
+    testImplementation(project(":adapters:link-aggregator-html-fetcher-adapter"))
     testImplementation("org.testcontainers:ollama:1.20.4")
 //    testImplementation("org.springframework.ai:spring-ai-ollama-spring-boot-starter:1.0.0-M6")
 }

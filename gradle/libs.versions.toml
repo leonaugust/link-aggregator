@@ -16,6 +16,8 @@ gson = "2.14.0"
 
 junit = "5.10.0"
 testcontainers = "1.21.4"
+mockito = "5.14.2"
+assertj = "3.26.3"
 
 sonar = "7.3.0.8198"
 
@@ -39,6 +41,11 @@ swagger-annotations-jakarta = { module = "io.swagger.core.v3:swagger-annotations
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres"}
 
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit"}
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+mockito-junit-jupiter = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockito" }
+assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers"}
 testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers"}
 testcontainers-postgres = { module = "org.testcontainers:postgresql", version.ref = "testcontainers"}
