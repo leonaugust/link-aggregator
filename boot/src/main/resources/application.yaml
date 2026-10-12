@@ -8,8 +8,14 @@ link-aggregator:
     ollama.enabled: true
     enabled: true
     base-url: http://localhost:11434
-    generate-model: qwen2.5:3b-instruct
+    generate-model: qwen2.5:7b-instruct
     embed-model: nomic-embed-text
+  fraud-check:
+    enabled: true
+    provider: opentip
+    base-url: https://opentip.kaspersky.com/api/v1
+    api-key: ${OPENTIP_API_KEY:}
+    fail-open: true
 spring:
   application.name: link_aggregator
   autoconfigure.exclude:

@@ -204,7 +204,7 @@ configure(subProjectsWithoutGrouping) {
 
         failFast = true
 
-//        setIncludes(listOf("**/*IT.*"))
+        setIncludes(listOf("**/*IT.*"))
         filter {
             isFailOnNoMatchingTests = false
         }
