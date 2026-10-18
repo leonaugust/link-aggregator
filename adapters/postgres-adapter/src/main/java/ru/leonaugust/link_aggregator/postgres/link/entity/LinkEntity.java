@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +24,10 @@ import ru.leonaugust.link_aggregator.postgres.user.entity.UserEntity;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-@Table(name = "link")
+@Table(name = "link",
+    uniqueConstraints = @UniqueConstraint(
+        name = "uk_link_user_url",
+        columnNames = {"user_id", "url"}))
 public class LinkEntity {
 
   @Id

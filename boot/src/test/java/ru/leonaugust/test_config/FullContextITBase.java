@@ -72,6 +72,8 @@ public class FullContextITBase {
 
     registry.add("link-aggregator.category-determination.strategy", () -> "simple");
     registry.add("spring.kafka.bootstrap-servers", () -> "${spring.embedded.kafka.brokers}");
+    registry.add("link-aggregator.kafka.retry.interval-ms", () -> "100");
+    registry.add("spring.kafka.consumer.auto-offset-reset", () -> "earliest");
     registry.add("link-aggregator.fraud-check.api-key", () -> "test-api-key");
     registry.add("link-aggregator.fraud-check.fail-open", () -> "true");
     registry.add("link-aggregator.fraud-check.enabled", () -> "true");

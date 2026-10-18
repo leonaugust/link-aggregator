@@ -88,11 +88,14 @@ public class AddLinkPortIT extends FullContextITBase {
         .expectStatus()
         .is2xxSuccessful();
 
-//    Thread.sleep(5000L);
     Awaitility.await()
         .atMost(10, TimeUnit.SECONDS)
         .pollDelay(1, TimeUnit.SECONDS)
-        .until(() -> linkRepositoryDao.findByEmailOrTelegram(EMAIL, null).size() == 2);
+        .until(() -> {
+          var links = linkRepositoryDao.findByEmailOrTelegram(EMAIL, null);
+          return links.size() == 2
+              && links.stream().allMatch(link -> "undefined".equals(link.getCategory()));
+        });
     assertThat(linkRepositoryDao.findByEmailOrTelegram(EMAIL, null))
         .usingRecursiveComparison()
         .ignoringFields("id")

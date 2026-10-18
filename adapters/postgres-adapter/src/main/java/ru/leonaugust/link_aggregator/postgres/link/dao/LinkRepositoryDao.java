@@ -1,6 +1,7 @@
 package ru.leonaugust.link_aggregator.postgres.link.dao;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +11,8 @@ import ru.leonaugust.link_aggregator.postgres.link.entity.LinkEntity;
 
 @Repository
 public interface LinkRepositoryDao extends JpaRepository<LinkEntity, UUID> {
+
+  Optional<LinkEntity> findByUserIdAndUrl(UUID userId, String url);
 
   @Query("SELECT l FROM LinkEntity l " +
       "JOIN l.user u " +

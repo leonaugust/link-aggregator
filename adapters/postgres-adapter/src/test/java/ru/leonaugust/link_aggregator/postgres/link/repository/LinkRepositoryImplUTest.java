@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.dao.DataIntegrityViolationException;
 import ru.leonaugust.link_aggregator.domain.link.Link;
 import ru.leonaugust.link_aggregator.domain.user.CommunicationChannel;
 import ru.leonaugust.link_aggregator.domain.user.UserCommunication;
@@ -51,9 +52,11 @@ class LinkRepositoryImplUTest {
   void save_userFound_persistsEntityAndReturnsDto() {
     var link = Link.builder().url("https://a").category("development").build();
     var criteria = criteria();
-    var user = UserEntity.builder().build();
+    var userId = UUID.randomUUID();
+    var user = UserEntity.builder().id(userId).build();
     var entity = LinkEntity.builder().url("https://a").build();
     when(userRepositoryDao.findByEmailOrTelegram(EMAIL, null)).thenReturn(Optional.of(user));
+    when(linkRepositoryDao.findByUserIdAndUrl(userId, "https://a")).thenReturn(Optional.empty());
     when(mapper.toEntity(link, user)).thenReturn(entity);
     when(linkRepositoryDao.save(entity)).thenReturn(entity);
     when(mapper.toDto(entity)).thenReturn(link);
@@ -62,6 +65,43 @@ class LinkRepositoryImplUTest {
 
     assertThat(result).isEqualTo(link);
     verify(linkRepositoryDao).save(entity);
+  }
+
+  @Test
+  void save_existingLink_returnsExistingAndSkipsInsert() {
+    var link = Link.builder().url("https://a").category("development").build();
+    var userId = UUID.randomUUID();
+    var user = UserEntity.builder().id(userId).build();
+    var existing = LinkEntity.builder().id(UUID.randomUUID()).url("https://a").build();
+    when(userRepositoryDao.findByEmailOrTelegram(EMAIL, null)).thenReturn(Optional.of(user));
+    when(linkRepositoryDao.findByUserIdAndUrl(userId, "https://a")).thenReturn(Optional.of(existing));
+    when(mapper.toDto(existing)).thenReturn(link);
+
+    var result = repository.save(link, criteria());
+
+    assertThat(result).isEqualTo(link);
+    verify(linkRepositoryDao, never()).save(any());
+    verify(mapper, never()).toEntity(any(), any());
+  }
+
+  @Test
+  void save_concurrentDuplicate_reReadsAfterConstraintViolation() {
+    var link = Link.builder().url("https://a").category("development").build();
+    var userId = UUID.randomUUID();
+    var user = UserEntity.builder().id(userId).build();
+    var entity = LinkEntity.builder().url("https://a").build();
+    var existing = LinkEntity.builder().id(UUID.randomUUID()).url("https://a").build();
+    when(userRepositoryDao.findByEmailOrTelegram(EMAIL, null)).thenReturn(Optional.of(user));
+    when(linkRepositoryDao.findByUserIdAndUrl(userId, "https://a"))
+        .thenReturn(Optional.empty())
+        .thenReturn(Optional.of(existing));
+    when(mapper.toEntity(link, user)).thenReturn(entity);
+    when(linkRepositoryDao.save(entity)).thenThrow(new DataIntegrityViolationException("duplicate"));
+    when(mapper.toDto(existing)).thenReturn(link);
+
+    var result = repository.save(link, criteria());
+
+    assertThat(result).isEqualTo(link);
   }
 
   @Test

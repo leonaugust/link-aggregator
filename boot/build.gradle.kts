@@ -34,6 +34,7 @@ dependencies {
     testImplementation(rootProject.libs.testcontainers.postgres)
     testImplementation(rootProject.libs.spring.cloud.stub.runner)
     testImplementation(rootProject.libs.gson)
+    testImplementation("org.springframework.kafka:spring-kafka")
     testImplementation("org.springframework.kafka:spring-kafka-test")
     testImplementation("org.springframework.boot:spring-boot-starter-data-jpa")
 

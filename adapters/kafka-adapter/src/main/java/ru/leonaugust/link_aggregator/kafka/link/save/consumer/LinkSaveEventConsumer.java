@@ -16,13 +16,13 @@ import ru.leonaugust.link_aggregator.kafka.common.KafkaTopicConfig;
 public class LinkSaveEventConsumer {
 
   private final LinkRepository linkRepository;
-  private final LinkCategorizeEventProducer linkSaveEventProducer;
+  private final LinkCategorizeEventProducer linkCategorizeEventProducer;
 
   @KafkaListener(topics = KafkaTopicConfig.SAVE, groupId = "link-processor-group")
   public void consume(LinkSaveEvent event) {
     log.info("Received event: {}", event);
     var link = linkRepository.save(event.getLink(), event.getUserSearchCriteria());
-    linkSaveEventProducer.send(LinkCategorizeEvent.builder()
+    linkCategorizeEventProducer.send(LinkCategorizeEvent.builder()
         .key(link.id().toString())
         .link(link)
         .build());
