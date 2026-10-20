@@ -28,10 +28,10 @@ public class SettingsEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  @Column(updatable = false, nullable = false)
+  @Column(updatable = false)
   private UUID id;
 
-  @Column(name = "name", nullable = false)
+  @Column(name = "name")
   private String name;
 
   @Column(name = "update_date")

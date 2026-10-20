@@ -11,17 +11,6 @@ spring:
   autoconfigure.exclude:
     - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
     - org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration
-#  liquibase:
-#    change-log: classpath:migrations/bootstrap.yaml
-#    default-schema: link_aggregator
-#    liquibase-schema: public
-#    contexts: dev
-#    database-change-log-table: DATABASECHANGELOG_${spring.liquibase.default-schema}
-#    database-change-log-lock-table: DATABASECHANGELOGLOCK_${spring.liquibase.default-schema}
-#    parameters:
-#      liquibase.dbSchemaNameToCreate: ${spring.liquibase.default-schema}
-#    enabled: true
-#    clear-checksums: false
 
   mail:
     host: smtp.gmail.com
@@ -54,7 +43,7 @@ spring:
     username: ${postgres.user}
     password: ${postgres.password}
   jpa:
-    database: h2
+    database: postgresql
     open-in-view: false
     properties:
       hibernate:
@@ -71,7 +60,7 @@ spring:
         use_sql_comments: false
         format_sql: false
     hibernate:
-      ddl-auto: create-drop # validate
+      ddl-auto: validate
   servlet:
     multipart:
       max-file-size: 100MB

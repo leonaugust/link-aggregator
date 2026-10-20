@@ -3,6 +3,8 @@ dependencies{
 
     implementation(project(":core:link-aggregator-core-application"))
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+
+    runtimeOnly("org.springframework.boot:spring-boot-starter-liquibase")
 }
 
 tasks.publish {
