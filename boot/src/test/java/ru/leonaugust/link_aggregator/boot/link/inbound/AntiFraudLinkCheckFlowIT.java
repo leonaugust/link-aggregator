@@ -27,8 +27,10 @@ import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestConstructor.AutowireMode;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import ru.leonaugust.link_aggregator.boot.MicroserviceStarter;
+import ru.leonaugust.link_aggregator.domain.link.LinkSecurityStatus;
 import ru.leonaugust.link_aggregator.domain.user.CommunicationChannel;
 import ru.leonaugust.link_aggregator.postgres.link.dao.LinkRepositoryDao;
+import ru.leonaugust.link_aggregator.postgres.link.entity.LinkEntity;
 import ru.leonaugust.link_aggregator.postgres.user.dao.UserRepositoryDao;
 import ru.leonaugust.link_aggregator.postgres.user.entity.CommunicationChannelDbEnum;
 import ru.leonaugust.link_aggregator.postgres.user.entity.UserCommunicationEntity;
@@ -41,7 +43,7 @@ import ru.leonaugust.test_config.FullContextITBase;
 
 @RequiredArgsConstructor
 @TestConstructor(autowireMode = AutowireMode.ALL)
-@SpringBootTest(webEnvironment = RANDOM_PORT, classes = MicroserviceStarter.class)
+@SpringBootTest(webEnvironment = RANDOM_PORT, classes = {MicroserviceStarter.class})
 public class AntiFraudLinkCheckFlowIT extends FullContextITBase {
 
   public static final String EMAIL = "fraud-check@mail.ru";
@@ -86,7 +88,7 @@ public class AntiFraudLinkCheckFlowIT extends FullContextITBase {
   }
 
   @Test
-  void checkFlow_maliciousLinkBlocked_safeLinkSaved() {
+  void checkFlow_maliciousLinkSavedAsSuspicious_safeLinkCategorized() {
     var userEntity = UserEntity.builder().build();
     userEntity.setCommunication(
         UserCommunicationEntity.builder()
@@ -112,15 +114,34 @@ public class AntiFraudLinkCheckFlowIT extends FullContextITBase {
     Awaitility.await()
         .atMost(60, TimeUnit.SECONDS)
         .pollDelay(1, TimeUnit.SECONDS)
-        .until(() -> linkRepositoryDao.findByEmailOrTelegram(EMAIL, null).size() == 1);
+        .until(() -> {
+          var links = linkRepositoryDao.findByEmailOrTelegram(EMAIL, null);
+          var safeCategorized = links.stream()
+              .anyMatch(link -> SAFE_URL.equals(link.getUrl()) && "undefined".equals(link.getCategory()));
+          var maliciousSaved = links.stream()
+              .anyMatch(link -> MALICIOUS_URL.equals(link.getUrl())
+                  && LinkSecurityStatus.SUSPICIOUS == link.getSecurityStatus());
+          return links.size() == 2 && safeCategorized && maliciousSaved;
+        });
 
     var savedLinks = linkRepositoryDao.findByEmailOrTelegram(EMAIL, null);
     assertThat(savedLinks)
         .extracting("url")
-        .containsExactly(SAFE_URL);
-    assertThat(savedLinks.get(0).getCategory()).isEqualTo("undefined");
-    assertThat(savedLinks)
-        .extracting("url")
-        .doesNotContain(MALICIOUS_URL);
+        .containsExactlyInAnyOrder(SAFE_URL, MALICIOUS_URL);
+
+    var safeLink = linkByUrl(savedLinks, SAFE_URL);
+    assertThat(safeLink.getSecurityStatus()).isEqualTo(LinkSecurityStatus.CHECK_OK);
+    assertThat(safeLink.getCategory()).isEqualTo("undefined");
+
+    var maliciousLink = linkByUrl(savedLinks, MALICIOUS_URL);
+    assertThat(maliciousLink.getSecurityStatus()).isEqualTo(LinkSecurityStatus.SUSPICIOUS);
+    assertThat(maliciousLink.getCategory()).isNull();
+  }
+
+  private LinkEntity linkByUrl(List<LinkEntity> links, String url) {
+    return links.stream()
+        .filter(link -> url.equals(link.getUrl()))
+        .findFirst()
+        .orElseThrow();
   }
 }

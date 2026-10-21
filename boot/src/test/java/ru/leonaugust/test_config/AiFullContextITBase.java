@@ -75,6 +75,9 @@ public class AiFullContextITBase {
   @DynamicPropertySource
   static void setUpProperties(final DynamicPropertyRegistry registry) {
     registry.add("link-aggregator.ai.base-url", AiFullContextITBase::ollamaBaseUrl);
+    registry.add("link-aggregator.ai.enabled", () -> "true");
+    registry.add("link-aggregator.ai.ollama.enabled", () -> "true");
+    registry.add("link-aggregator.category-determination.strategy", () -> "ai");
 
     Startables.deepStart(POSTGRES_CONTAINER).join();
 

@@ -6,7 +6,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import ru.leonaugust.link_aggregator.application.api.link.inbound.AntiFraudLinkCheckUseCase;
 import ru.leonaugust.link_aggregator.application.api.link.outbound.LinkSaveEventProducer;
-import ru.leonaugust.link_aggregator.domain.link.LinkSafetyViolationException;
 import ru.leonaugust.link_aggregator.domain.link.LinkSaveEvent;
 import ru.leonaugust.link_aggregator.domain.link.LinkVerifyEvent;
 import ru.leonaugust.link_aggregator.kafka.common.KafkaTopicConfig;
@@ -22,16 +21,13 @@ public class LinkVerifyEventConsumer {
   @KafkaListener(topics = KafkaTopicConfig.VERIFY, groupId = "link-processor-group")
   public void consume(LinkVerifyEvent event) {
     log.info("Received event: {}", event);
-    try {
-      antiFraudLinkCheckUseCase.check(event.getLink());
-    } catch (LinkSafetyViolationException e) {
-      log.warn("Link blocked by fraud check, save skipped: {}", e.getMessage());
-      return;
-    }
+    var verification = antiFraudLinkCheckUseCase.check(event.getLink());
+    var link = event.getLink().withSecurityStatus(verification.status());
     linkSaveEventProducer.send(LinkSaveEvent.builder()
         .key(event.getKey())
-        .link(event.getLink())
+        .link(link)
         .userSearchCriteria(event.getUserSearchCriteria())
+        .contentPage(verification.contentPage())
         .build());
   }
 }

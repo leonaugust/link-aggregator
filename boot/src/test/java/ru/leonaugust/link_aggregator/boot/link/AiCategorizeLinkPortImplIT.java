@@ -7,6 +7,7 @@ import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestConstructor.AutowireMode;
 import ru.leonaugust.link_aggregator.ai.category.AiCategorizeLinkUseCaseImpl;
 import ru.leonaugust.link_aggregator.boot.MicroserviceStarter;
+import ru.leonaugust.link_aggregator.domain.link.ContentPage;
 import ru.leonaugust.test_config.AiFullContextITBase;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,10 +31,10 @@ public class AiCategorizeLinkPortImplIT extends AiFullContextITBase {
   @Test
   void categorize_should_returnCorrectCategory() {
     assertThat(
-        categorizeLinkUseCase.categorize(DEVELOPMENT_TEXT).block()
+        categorizeLinkUseCase.categorize(new ContentPage(DEVELOPMENT_TEXT)).block()
     ).isEqualTo("development");
     assertThat(
-        categorizeLinkUseCase.categorize(BOOK_TEXT).block()
+        categorizeLinkUseCase.categorize(new ContentPage(BOOK_TEXT)).block()
     ).isEqualTo("book");
   }
 }

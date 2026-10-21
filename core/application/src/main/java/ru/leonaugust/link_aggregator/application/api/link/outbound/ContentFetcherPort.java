@@ -1,9 +1,8 @@
 package ru.leonaugust.link_aggregator.application.api.link.outbound;
 
-import java.util.Set;
+import ru.leonaugust.link_aggregator.domain.link.ContentPage;
 
 public interface ContentFetcherPort {
 
-  Set<String> fetchText(String url);
-
+  ContentPage fetch(String url);
 }

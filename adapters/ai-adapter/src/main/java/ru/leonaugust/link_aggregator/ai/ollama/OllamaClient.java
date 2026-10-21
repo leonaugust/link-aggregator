@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 import ru.leonaugust.link_aggregator.ai.common.*;
 
 @Component
-@ConditionalOnProperty(name = "link-aggregator.category-determination.strategy", havingValue = "ai", matchIfMissing = false)
+@ConditionalOnProperty(name = "link-aggregator.ai.enabled", havingValue = "true", matchIfMissing = false)
 @ConditionalOnProperty(name = "link-aggregator.ai.ollama.enabled", havingValue = "true", matchIfMissing = false)
 public class OllamaClient implements AiClient {
 

@@ -13,6 +13,7 @@ import ru.leonaugust.link_aggregator.domain.user.User;
 import ru.leonaugust.link_aggregator.domain.user.UserCommunication;
 import ru.leonaugust.link_aggregator.domain.user.UserCommunication.UserLanguage;
 import ru.leonaugust.link_aggregator.domain.user.UserWithLinks;
+import ru.leonaugust.link_aggregator.postgres.link.mapper.LinkMapper;
 import ru.leonaugust.link_aggregator.postgres.user.entity.CommunicationChannelDbEnum;
 import ru.leonaugust.link_aggregator.postgres.user.entity.UserCommunicationEntity;
 import ru.leonaugust.link_aggregator.postgres.user.entity.UserEntity;
@@ -20,6 +21,7 @@ import ru.leonaugust.link_aggregator.postgres.user.entity.UserLanguageDbEnum;
 
 @Mapper(componentModel = "spring",
     unmappedTargetPolicy = ReportingPolicy.ERROR,
+    uses = LinkMapper.class,
     builder = @Builder(disableBuilder = true)
 )
 public interface UserMapper {

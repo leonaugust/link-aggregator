@@ -10,5 +10,6 @@
   <include file="data/20-03-create-link.xml" relativeToChangelogFile="true"/>
   <include file="data/20-04-create-category.xml" relativeToChangelogFile="true"/>
   <include file="data/20-05-create-settings.xml" relativeToChangelogFile="true"/>
+  <include file="data/20-06-add-link-security-status.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

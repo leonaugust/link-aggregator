@@ -9,6 +9,7 @@ import org.springframework.test.context.TestConstructor;
 import org.springframework.test.context.TestConstructor.AutowireMode;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 import ru.leonaugust.link_aggregator.application.impl.link.inbound.SimpleWordCategorizeLinkUseCaseImpl;
+import ru.leonaugust.link_aggregator.domain.link.ContentPage;
 import ru.leonaugust.test_config.FullContextITBase;
 import ru.leonaugust.link_aggregator.boot.MicroserviceStarter;
 import ru.leonaugust.link_aggregator.postgres.category.config.CategoryDataInitializer;
@@ -24,7 +25,7 @@ import static ru.leonaugust.link_aggregator.postgres.category.config.CategoryDat
 @TestConstructor(autowireMode = AutowireMode.ALL)
 @SpringBootTest(
     webEnvironment = RANDOM_PORT,
-    classes = MicroserviceStarter.class
+    classes = {MicroserviceStarter.class}
 )
 public class SimpleWordCategorizeLinkPortImplIT extends FullContextITBase {
 
@@ -53,10 +54,10 @@ public class SimpleWordCategorizeLinkPortImplIT extends FullContextITBase {
   @Test
   void categorize_should_returnCorrectCategory() {
     assertThat(
-        simpleWordCategorizeLinkPort.categorize(DEVELOPMENT_TEXT).block()
+        simpleWordCategorizeLinkPort.categorize(new ContentPage(DEVELOPMENT_TEXT)).block()
     ).isEqualTo("development");
     assertThat(
-        simpleWordCategorizeLinkPort.categorize(BOOK_TEXT).block()
+        simpleWordCategorizeLinkPort.categorize(new ContentPage(BOOK_TEXT)).block()
     ).isEqualTo("book");
   }
 }

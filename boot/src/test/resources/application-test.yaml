@@ -5,6 +5,8 @@ link-aggregator:
   fraud-check:
     enabled: false
     provider: noop
+  ai:
+    enabled: false
 
 spring:
   application.name: ms-link-aggregator

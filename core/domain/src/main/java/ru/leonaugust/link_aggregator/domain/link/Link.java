@@ -6,6 +6,6 @@ import lombok.With;
 
 @Builder(toBuilder = true)
 @With
-public record Link(UUID id, String url, String category) {
+public record Link(UUID id, String url, String category, LinkSecurityStatus securityStatus) {
 
 }

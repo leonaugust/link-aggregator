@@ -32,14 +32,20 @@ public class LinkRepositoryImpl implements LinkRepository {
     var user = userRepositoryDao.findByEmailOrTelegram(userSearchCriteria.getEmail(), userSearchCriteria.getTelegram()).orElseThrow();
     var existing = linkRepositoryDao.findByUserIdAndUrl(user.getId(), link.url());
     if (existing.isPresent()) {
-      return mapper.toDto(existing.get());
+      return applySecurityStatus(existing.get(), link);
     }
     try {
       var savedEntity = linkRepositoryDao.save(mapper.toEntity(link, user));
       return mapper.toDto(savedEntity);
     } catch (DataIntegrityViolationException e) {
-      return mapper.toDto(linkRepositoryDao.findByUserIdAndUrl(user.getId(), link.url()).orElseThrow());
+      return applySecurityStatus(linkRepositoryDao.findByUserIdAndUrl(user.getId(), link.url()).orElseThrow(), link);
     }
+  }
+
+  private Link applySecurityStatus(LinkEntity entity, Link link) {
+    mapper.mergeSecurityStatus(entity, link);
+    linkRepositoryDao.save(entity);
+    return mapper.toDto(entity);
   }
 
   @Override

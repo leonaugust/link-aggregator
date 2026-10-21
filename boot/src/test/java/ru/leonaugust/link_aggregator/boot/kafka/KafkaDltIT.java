@@ -29,7 +29,7 @@ import ru.leonaugust.test_config.FullContextITBase;
 
 @RequiredArgsConstructor
 @TestConstructor(autowireMode = AutowireMode.ALL)
-@SpringBootTest(webEnvironment = RANDOM_PORT, classes = MicroserviceStarter.class)
+@SpringBootTest(webEnvironment = RANDOM_PORT, classes = {MicroserviceStarter.class})
 public class KafkaDltIT extends FullContextITBase {
 
   private static final String CATEGORIZE_TOPIC = "link-categorize";

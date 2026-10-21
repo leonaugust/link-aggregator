@@ -34,7 +34,7 @@ import ru.leonaugust.link_aggregator.rest_adapter.link.v1.dto.AddLinkRequestDto;
 
 @RequiredArgsConstructor
 @TestConstructor(autowireMode = AutowireMode.ALL)
-@SpringBootTest(webEnvironment = RANDOM_PORT, classes = MicroserviceStarter.class)
+@SpringBootTest(webEnvironment = RANDOM_PORT, classes = {MicroserviceStarter.class})
 public class AddLinkPortIT extends FullContextITBase {
 
   public static final String EMAIL = "test@mail.ru";

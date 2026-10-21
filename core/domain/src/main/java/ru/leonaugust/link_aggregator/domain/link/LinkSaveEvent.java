@@ -1,7 +1,5 @@
 package ru.leonaugust.link_aggregator.domain.link;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,5 +15,6 @@ public class LinkSaveEvent extends AbstractEvent {
 
   private Link link;
   private UserSearchCriteria userSearchCriteria;
+  private ContentPage contentPage;
 
 }
