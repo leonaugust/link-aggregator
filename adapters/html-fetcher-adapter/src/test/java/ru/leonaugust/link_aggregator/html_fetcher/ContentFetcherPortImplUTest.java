@@ -15,7 +15,25 @@ class ContentFetcherPortImplUTest {
   private final ContentFetcherPortImpl port = new ContentFetcherPortImpl();
 
   @Test
-  void fetchText_invalidUrl_returnsEmptySet() {
-    assertThat(port.fetchText("not a valid url")).isEmpty();
+  void fetch_invalidUrl_returnsEmptyPage() {
+    assertThat(port.fetch("not a valid url").isEmpty()).isTrue();
+  }
+
+  @Test
+  void truncate_textLongerThanLimit_returnsTruncatedText() {
+    var text = "a".repeat(ContentFetcherPortImpl.MAX_CONTENT_LENGTH + 100);
+
+    var result = ContentFetcherPortImpl.truncate(text);
+
+    assertThat(result).hasSize(ContentFetcherPortImpl.MAX_CONTENT_LENGTH);
+  }
+
+  @Test
+  void truncate_textWithinLimit_returnsOriginalText() {
+    var text = "a".repeat(ContentFetcherPortImpl.MAX_CONTENT_LENGTH);
+
+    var result = ContentFetcherPortImpl.truncate(text);
+
+    assertThat(result).isEqualTo(text);
   }
 }

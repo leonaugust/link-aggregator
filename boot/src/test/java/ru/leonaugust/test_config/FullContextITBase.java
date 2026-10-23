@@ -20,12 +20,10 @@ import org.testcontainers.lifecycle.Startables;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 import org.testcontainers.utility.DockerImageName;
 import ru.leonaugust.link_aggregator.application.api.link.outbound.ContentFetcherPort;
+import ru.leonaugust.link_aggregator.domain.link.ContentPage;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
-import java.util.regex.MatchResult;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Класс помещён в этом пакете, чтобы не менять ComponentScan у MicroserviceStarter
@@ -104,15 +102,7 @@ public class FullContextITBase {
   @Bean
   @Primary
   public ContentFetcherPort contentFetcherPort() {
-    return url -> {
-      var wordPattern = Pattern.compile("[\\p{L}]{2,}");
-      var text = url; // NOSONAR. присваивание переменной для читабельности.
-      return wordPattern.matcher(text.toLowerCase())
-          .results()
-          .map(MatchResult::group)
-          .map(String::toLowerCase)
-          .collect(Collectors.toSet());
-    };
+    return url -> new ContentPage(url);
   }
 
   @AfterEach

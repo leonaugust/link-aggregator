@@ -10,6 +10,11 @@ link-aggregator:
     base-url: http://localhost:11434
     generate-model: qwen2.5:7b-instruct
     embed-model: nomic-embed-text
+    prompt-injection:
+      threshold: 0.88
+      max-words: 300
+      embed-timeout: 2s
+      detection-timeout: 10s
   fraud-check:
     enabled: true
     provider: opentip

@@ -23,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.dao.DataIntegrityViolationException;
 import ru.leonaugust.link_aggregator.domain.link.Link;
+import ru.leonaugust.link_aggregator.domain.link.LinkSecurityStatus;
 import ru.leonaugust.link_aggregator.domain.user.CommunicationChannel;
 import ru.leonaugust.link_aggregator.domain.user.UserCommunication;
 import ru.leonaugust.link_aggregator.domain.user.UserSearchCriteria;
@@ -68,11 +69,13 @@ class LinkRepositoryImplUTest {
   }
 
   @Test
-  void save_existingLink_returnsExistingAndSkipsInsert() {
-    var link = Link.builder().url("https://a").category("development").build();
+  void save_existingLink_updatesSecurityStatusAndReturnsExisting() {
+    var link = Link.builder().url("https://a").category("development")
+        .securityStatus(LinkSecurityStatus.SUSPICIOUS).build();
     var userId = UUID.randomUUID();
     var user = UserEntity.builder().id(userId).build();
-    var existing = LinkEntity.builder().id(UUID.randomUUID()).url("https://a").build();
+    var existing = LinkEntity.builder().id(UUID.randomUUID()).url("https://a")
+        .securityStatus(LinkSecurityStatus.CHECK_OK).build();
     when(userRepositoryDao.findByEmailOrTelegram(EMAIL, null)).thenReturn(Optional.of(user));
     when(linkRepositoryDao.findByUserIdAndUrl(userId, "https://a")).thenReturn(Optional.of(existing));
     when(mapper.toDto(existing)).thenReturn(link);
@@ -80,7 +83,8 @@ class LinkRepositoryImplUTest {
     var result = repository.save(link, criteria());
 
     assertThat(result).isEqualTo(link);
-    verify(linkRepositoryDao, never()).save(any());
+    verify(mapper).mergeSecurityStatus(existing, link);
+    verify(linkRepositoryDao).save(existing);
     verify(mapper, never()).toEntity(any(), any());
   }
 
@@ -102,6 +106,8 @@ class LinkRepositoryImplUTest {
     var result = repository.save(link, criteria());
 
     assertThat(result).isEqualTo(link);
+    verify(mapper).mergeSecurityStatus(existing, link);
+    verify(linkRepositoryDao).save(existing);
   }
 
   @Test

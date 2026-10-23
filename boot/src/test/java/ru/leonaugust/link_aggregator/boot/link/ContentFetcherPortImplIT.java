@@ -18,19 +18,19 @@ import ru.leonaugust.test_config.FullContextITBase;
 
 @RequiredArgsConstructor
 @TestConstructor(autowireMode = AutowireMode.ALL)
-@SpringBootTest(webEnvironment = RANDOM_PORT, classes = MicroserviceStarter.class)
+@SpringBootTest(webEnvironment = RANDOM_PORT, classes = {MicroserviceStarter.class})
 public class ContentFetcherPortImplIT extends FullContextITBase {
 
   private final ContentFetcherPortImpl contentFetcherPort;
 
   @Test
-  void fetchText_should_extractWordsFromPage() {
+  void fetch_should_extractTextFromPage() {
     stubFor(get(urlPathEqualTo("/page"))
         .willReturn(ok().withHeader("Content-Type", "text/html")
             .withBody("<html><body>привет spring java</body></html>")));
 
-    var words = contentFetcherPort.fetchText(WIREMOCK.baseUrl() + "/page");
+    var contentPage = contentFetcherPort.fetch(WIREMOCK.baseUrl() + "/page");
 
-    assertThat(words).contains("привет", "spring", "java");
+    assertThat(contentPage.text()).contains("привет", "spring", "java");
   }
 }

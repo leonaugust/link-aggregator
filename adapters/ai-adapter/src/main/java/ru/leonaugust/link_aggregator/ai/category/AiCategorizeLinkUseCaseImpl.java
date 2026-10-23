@@ -7,8 +7,8 @@ import ru.leonaugust.link_aggregator.ai.common.GenerateRequest;
 import ru.leonaugust.link_aggregator.ai.common.GenerateResponse;
 import ru.leonaugust.link_aggregator.ai.config.AiProperties;
 import ru.leonaugust.link_aggregator.application.api.link.inbound.CategorizeLinkUseCase;
-import ru.leonaugust.link_aggregator.application.api.link.outbound.ContentFetcherPort;
 import ru.leonaugust.link_aggregator.domain.category.LinkMainCategory;
+import ru.leonaugust.link_aggregator.domain.link.ContentPage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,20 +16,24 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AiCategorizeLinkUseCaseImpl implements CategorizeLinkUseCase {
 
+    private static final String UNDEFINED = "undefined";
     private static final List<String> CATEGORIES = Arrays.stream(LinkMainCategory.values()).map(LinkMainCategory::getDescription).toList();
 
     private final AiClient aiClient;
     private final AiProperties aiProperties;
-    private final ContentFetcherPort contentFetcherPort;
 
     @Override
-    public Mono<String> categorize(String link) {
-        var pageText = contentFetcherPort.fetchText(link);
-        return aiClient.generate(makeGenerateRequest(String.join(", ", pageText)))
+    public Mono<String> categorize(ContentPage contentPage) {
+        var pageText = contentPage == null ? "" : contentPage.text();
+        return categorizeByModel(pageText);
+    }
+
+    private Mono<String> categorizeByModel(String pageText) {
+        return aiClient.generate(makeGenerateRequest(pageText))
                 .map(GenerateResponse::response)
                 .map(String::trim)
                 .filter(CATEGORIES::contains)
-                .defaultIfEmpty("undefined");
+                .defaultIfEmpty(UNDEFINED);
     }
 
     private GenerateRequest makeGenerateRequest(String pageText) {
