@@ -34,7 +34,7 @@ public class UserEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  @Column(updatable = false, nullable = false)
+  @Column(updatable = false)
   private UUID id;
 
   @OneToOne(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)

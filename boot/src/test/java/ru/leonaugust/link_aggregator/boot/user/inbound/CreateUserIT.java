@@ -33,7 +33,7 @@ import ru.leonaugust.link_aggregator.rest_adapter.user.v1.dto.CreateUserRequestD
 
 @RequiredArgsConstructor
 @TestConstructor(autowireMode = AutowireMode.ALL)
-@SpringBootTest(webEnvironment = RANDOM_PORT, classes = MicroserviceStarter.class)
+@SpringBootTest(webEnvironment = RANDOM_PORT, classes = {MicroserviceStarter.class})
 public class CreateUserIT extends FullContextITBase {
 
   public static final String EMAIL = "test@mail.ru";

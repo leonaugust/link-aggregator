@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+  <changeSet id="create-link-table" author="leonaugust">
+    <createTable tableName="link">
+      <column name="id" type="uuid">
+        <constraints primaryKey="true" primaryKeyName="pk_link" nullable="false"/>
+      </column>
+      <column name="user_id" type="uuid"/>
+      <column name="url" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="category" type="varchar(255)"/>
+    </createTable>
+    <addForeignKeyConstraint
+        baseTableName="link"
+        baseColumnNames="user_id"
+        constraintName="fk_link_user"
+        referencedTableName="users"
+        referencedColumnNames="id"/>
+    <addUniqueConstraint
+        tableName="link"
+        columnNames="user_id, url"
+        constraintName="uk_link_user_url"/>
+  </changeSet>
+
+</databaseChangeLog>

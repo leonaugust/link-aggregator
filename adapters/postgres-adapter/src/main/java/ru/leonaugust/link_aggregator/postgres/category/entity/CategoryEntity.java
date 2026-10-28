@@ -26,10 +26,10 @@ public class CategoryEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  @Column(updatable = false, nullable = false)
+  @Column(updatable = false)
   private UUID id;
 
-  @Column(name = "word", nullable = false)
+  @Column(name = "word")
   private String word;
 
   @Column(name = "name")

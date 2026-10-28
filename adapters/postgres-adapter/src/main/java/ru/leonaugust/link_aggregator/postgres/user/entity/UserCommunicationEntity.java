@@ -42,11 +42,12 @@ public class UserCommunicationEntity {
   @Column(name = "telegram")
   private String telegram;
 
-  @Column(name = "preferred_channel", nullable = false)
+  @Column(name = "preferred_channel")
   @Enumerated(EnumType.STRING)
   private CommunicationChannelDbEnum preferredChannel;
 
-  @Column(name = "language", nullable = false)
+  @Column(name = "language")
+  @Enumerated(EnumType.STRING)
   private UserLanguageDbEnum language;
 
   @MapsId

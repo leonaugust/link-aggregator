@@ -28,7 +28,7 @@ import ru.leonaugust.link_aggregator.postgres.user.entity.UserLanguageDbEnum;
 @Disabled
 @RequiredArgsConstructor
 @TestConstructor(autowireMode = AutowireMode.ALL)
-@SpringBootTest(webEnvironment = RANDOM_PORT, classes = MicroserviceStarter.class)
+@SpringBootTest(webEnvironment = RANDOM_PORT, classes = {MicroserviceStarter.class})
 public class ReportSendingE2EIT extends FullContextITBase {
 
   @Value("${MAIL_SENDER_RECIPIENT:recipient}")

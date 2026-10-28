@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import ru.leonaugust.link_aggregator.application.api.link.outbound.LinkRepository;
@@ -29,8 +30,22 @@ public class LinkRepositoryImpl implements LinkRepository {
   @Override
   public Link save(Link link, UserSearchCriteria userSearchCriteria) {
     var user = userRepositoryDao.findByEmailOrTelegram(userSearchCriteria.getEmail(), userSearchCriteria.getTelegram()).orElseThrow();
-    var savedEntity = linkRepositoryDao.save(mapper.toEntity(link, user));
-    return mapper.toDto(savedEntity);
+    var existing = linkRepositoryDao.findByUserIdAndUrl(user.getId(), link.url());
+    if (existing.isPresent()) {
+      return applySecurityStatus(existing.get(), link);
+    }
+    try {
+      var savedEntity = linkRepositoryDao.save(mapper.toEntity(link, user));
+      return mapper.toDto(savedEntity);
+    } catch (DataIntegrityViolationException e) {
+      return applySecurityStatus(linkRepositoryDao.findByUserIdAndUrl(user.getId(), link.url()).orElseThrow(), link);
+    }
+  }
+
+  private Link applySecurityStatus(LinkEntity entity, Link link) {
+    mapper.mergeSecurityStatus(entity, link);
+    linkRepositoryDao.save(entity);
+    return mapper.toDto(entity);
   }
 
   @Override

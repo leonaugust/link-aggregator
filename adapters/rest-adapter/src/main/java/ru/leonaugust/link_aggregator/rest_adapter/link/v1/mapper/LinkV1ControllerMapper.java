@@ -24,6 +24,7 @@ public interface LinkV1ControllerMapper {
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "category", ignore = true)
+  @Mapping(target = "securityStatus", ignore = true)
   @Mapping(target = "url", source = "link")
   Link mapLink(String link);
 

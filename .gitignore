@@ -1,5 +1,7 @@
 .gradle
 build/
+.scannerwork/
+.sonar-token
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
@@ -41,3 +43,7 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+/opencode/
+/AGENTS.md
+/opencode.json
+/.opencode/

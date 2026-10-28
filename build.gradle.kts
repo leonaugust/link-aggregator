@@ -26,6 +26,14 @@ subprojects {
         implementation(rootProject.libs.jackson)
 
         testImplementation(platform(rootProject.libs.junit.bom))
+        testRuntimeOnly(rootProject.libs.junit.platform.launcher)
+
+        if (project.path.startsWith(":core")) {
+            testImplementation(rootProject.libs.junit.jupiter)
+            testImplementation(rootProject.libs.mockito.core)
+            testImplementation(rootProject.libs.mockito.junit.jupiter)
+            testImplementation(rootProject.libs.assertj.core)
+        }
     }
 
     if (!project.path.startsWith(":core")) {
@@ -204,7 +212,7 @@ configure(subProjectsWithoutGrouping) {
 
         failFast = true
 
-//        setIncludes(listOf("**/*IT.*"))
+        setIncludes(listOf("**/*IT.*"))
         filter {
             isFailOnNoMatchingTests = false
         }
@@ -281,6 +289,72 @@ val jacocoMerge = tasks.register<JavaExec>("jacocoMerge") {
     doLast {
         logger.lifecycle("JaCoCo merged all exec-files into the aggregated one: $pathToMergedExecFile")
     }
+}
+
+val coverageCoreProjects = setOf(
+    ":core:link-aggregator-core-domain",
+    ":core:link-aggregator-core-application"
+)
+val coverageAdapterProjects = setOf(
+    ":adapters:link-aggregator-ai-adapter",
+    ":adapters:link-aggregator-email-adapter",
+    ":adapters:link-aggregator-fraud-adapter",
+    ":adapters:link-aggregator-html-fetcher-adapter",
+    ":adapters:link-aggregator-kafka-adapter",
+    ":adapters:link-aggregator-postgres-adapter",
+    ":adapters:link-aggregator-rest-adapter",
+    ":adapters:link-aggregator-util"
+)
+val coverageProjects = coverageCoreProjects + coverageAdapterProjects
+val jacocoGeneratedExcludes = listOf("**/*MapperImpl.class", "**/*MapperImpl$*.class")
+val coverageExecFile = layout.buildDirectory.file("coverage/aggregated-coverage.exec")
+
+val jacocoCoverageExecMerge = tasks.register<JavaExec>("jacocoCoverageExecMerge") {
+    group = "leon_august"
+    description = "Merges UTest+ITest exec files from all modules for per-module coverage gates"
+    classpath = configurations.named("jacocoCli").get()
+    outputs.file(coverageExecFile)
+    outputs.upToDateWhen { false }
+    dependsOn(subProjectsWithoutGrouping.map { "${it.path}:test" })
+    dependsOn(subProjectsWithoutGrouping.map { "${it.path}:integrationTest" })
+    doFirst {
+        val dest = coverageExecFile.get().asFile
+        dest.parentFile.mkdirs()
+        val inputs = fileTree(rootDir) { include("**/build/jacoco/*.exec") }
+            .files.map { it.absolutePath }
+            .filter { it != dest.absolutePath && it != pathToMergedExecFile }
+        args = listOf("merge") + inputs + listOf("--destfile", dest.absolutePath)
+    }
+}
+
+coverageProjects.map { project(it) }.forEach { p ->
+    val threshold = if (p.path in coverageCoreProjects) "0.95" else "0.70"
+    val verify = p.tasks.register<JacocoCoverageVerification>("jacocoModuleCoverageVerification") {
+        group = "verification"
+        description = "Fails build if ${p.name} instruction coverage < ${threshold}"
+        dependsOn(jacocoCoverageExecMerge)
+        executionData.setFrom(coverageExecFile)
+        sourceDirectories.setFrom(p.the<SourceSetContainer>()["main"].allSource.srcDirs)
+        classDirectories.setFrom(
+            files(p.the<SourceSetContainer>()["main"].output).map {
+                fileTree(it) {
+                    exclude(jacocoExcludePatterns)
+                    exclude(jacocoGeneratedExcludes)
+                }
+            }
+        )
+        violationRules {
+            rule {
+                element = "BUNDLE"
+                limit {
+                    counter = "INSTRUCTION"
+                    value = "COVEREDRATIO"
+                    minimum = threshold.toBigDecimal()
+                }
+            }
+        }
+    }
+    p.tasks.named("check") { dependsOn(verify) }
 }
 
 val jacocoRootReport = tasks.register<JacocoReport>("jacocoRootReport") {

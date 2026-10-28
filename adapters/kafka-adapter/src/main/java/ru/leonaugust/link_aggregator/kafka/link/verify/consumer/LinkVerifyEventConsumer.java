@@ -21,11 +21,13 @@ public class LinkVerifyEventConsumer {
   @KafkaListener(topics = KafkaTopicConfig.VERIFY, groupId = "link-processor-group")
   public void consume(LinkVerifyEvent event) {
     log.info("Received event: {}", event);
-    antiFraudLinkCheckUseCase.check(event.getLink());
+    var verification = antiFraudLinkCheckUseCase.check(event.getLink());
+    var link = event.getLink().withSecurityStatus(verification.status());
     linkSaveEventProducer.send(LinkSaveEvent.builder()
         .key(event.getKey())
-        .link(event.getLink())
+        .link(link)
         .userSearchCriteria(event.getUserSearchCriteria())
+        .contentPage(verification.contentPage())
         .build());
   }
 }

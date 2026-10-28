@@ -8,6 +8,7 @@ import ru.leonaugust.link_aggregator.application.api.link.outbound.LinkCategoriz
 import ru.leonaugust.link_aggregator.application.api.link.outbound.LinkRepository;
 import ru.leonaugust.link_aggregator.domain.link.LinkCategorizeEvent;
 import ru.leonaugust.link_aggregator.domain.link.LinkSaveEvent;
+import ru.leonaugust.link_aggregator.domain.link.LinkSecurityStatus;
 import ru.leonaugust.link_aggregator.kafka.common.KafkaTopicConfig;
 
 @Component
@@ -16,15 +17,20 @@ import ru.leonaugust.link_aggregator.kafka.common.KafkaTopicConfig;
 public class LinkSaveEventConsumer {
 
   private final LinkRepository linkRepository;
-  private final LinkCategorizeEventProducer linkSaveEventProducer;
+  private final LinkCategorizeEventProducer linkCategorizeEventProducer;
 
   @KafkaListener(topics = KafkaTopicConfig.SAVE, groupId = "link-processor-group")
   public void consume(LinkSaveEvent event) {
     log.info("Received event: {}", event);
     var link = linkRepository.save(event.getLink(), event.getUserSearchCriteria());
-    linkSaveEventProducer.send(LinkCategorizeEvent.builder()
+    if (LinkSecurityStatus.SUSPICIOUS == event.getLink().securityStatus()) {
+      log.warn("Ссылка {} помечена как подозрительная, категоризация пропущена", link.url());
+      return;
+    }
+    linkCategorizeEventProducer.send(LinkCategorizeEvent.builder()
         .key(link.id().toString())
         .link(link)
+        .contentPage(event.getContentPage())
         .build());
   }
 }

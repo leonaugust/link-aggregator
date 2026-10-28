@@ -54,9 +54,11 @@ public class CategoryDataInitializer {
           }
         }
       }
-      settingsDao.save(SettingsEntity.builder()
-          .name(CATEGORIES_INITIALIZED)
-          .build());
+      if (!settingsDao.existsByName(CATEGORIES_INITIALIZED)) {
+        settingsDao.save(SettingsEntity.builder()
+            .name(CATEGORIES_INITIALIZED)
+            .build());
+      }
     } catch (Exception e) {
       throw new RuntimeException("Failed to initialize category words", e);
     }

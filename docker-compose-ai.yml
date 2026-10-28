@@ -1,0 +1,29 @@
+services:
+  ollama:
+    image: ollama/ollama:rocm
+    container_name: ollama
+    devices:
+      - /dev/kfd:/dev/kfd
+      - /dev/dri:/dev/dri
+    entrypoint: [ "/bin/sh", "-c" ]
+    command:
+      - |
+        ollama serve &
+        sleep 3
+        ollama pull qwen2.5:7b-instruct
+        ollama pull nomic-embed-text
+        wait
+    ports:
+      - "${OLLAMA_PORT:-11434}:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "ollama list >/dev/null 2>&1 || exit 1" ]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 10s
+
+volumes:
+  ollama_models:

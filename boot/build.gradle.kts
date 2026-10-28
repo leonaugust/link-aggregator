@@ -10,6 +10,7 @@ dependencies {
     implementation(project(":core:link-aggregator-core-application"))
 
     implementation(project(":adapters:link-aggregator-ai-adapter"))
+    implementation(project(":adapters:link-aggregator-fraud-adapter"))
     implementation(project(":adapters:link-aggregator-postgres-adapter"))
     runtimeOnly(project(":adapters:link-aggregator-kafka-adapter"))
     runtimeOnly(project(":adapters:link-aggregator-util"))
@@ -33,6 +34,7 @@ dependencies {
     testImplementation(rootProject.libs.testcontainers.postgres)
     testImplementation(rootProject.libs.spring.cloud.stub.runner)
     testImplementation(rootProject.libs.gson)
+    testImplementation("org.springframework.kafka:spring-kafka")
     testImplementation("org.springframework.kafka:spring-kafka-test")
     testImplementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
@@ -40,6 +42,7 @@ dependencies {
     testImplementation(project(":adapters:link-aggregator-postgres-adapter"))
     testImplementation(project(":adapters:link-aggregator-rest-adapter"))
     testImplementation(project(":adapters:link-aggregator-ai-adapter"))
+    testImplementation(project(":adapters:link-aggregator-html-fetcher-adapter"))
     testImplementation("org.testcontainers:ollama:1.20.4")
 //    testImplementation("org.springframework.ai:spring-ai-ollama-spring-boot-starter:1.0.0-M6")
 }

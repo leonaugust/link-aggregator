@@ -21,7 +21,7 @@ import ru.leonaugust.link_aggregator.postgres.settings.dao.SettingsRepositoryDao
 @RequiredArgsConstructor
 @TestConstructor(autowireMode = AutowireMode.ALL)
 @SpringBootTest(webEnvironment = RANDOM_PORT,
-    classes = MicroserviceStarter.class
+    classes = {MicroserviceStarter.class}
 )
 public class CategoryDataInitializerIT extends FullContextITBase {
 

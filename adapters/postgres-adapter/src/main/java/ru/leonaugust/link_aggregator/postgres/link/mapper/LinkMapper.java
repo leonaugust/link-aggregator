@@ -21,6 +21,12 @@ public interface LinkMapper {
   void merge(@MappingTarget LinkEntity entity, Link link);
 
   @Mapping(target = "id", ignore = true)
+  @Mapping(target = "user", ignore = true)
+  @Mapping(target = "url", ignore = true)
+  @Mapping(target = "category", ignore = true)
+  void mergeSecurityStatus(@MappingTarget LinkEntity entity, Link link);
+
+  @Mapping(target = "id", ignore = true)
   @Mapping(target = "user", source = "user")
   @Mapping(target = "url", source = "link.url")
   @Mapping(target = "category", source = "link.category")
